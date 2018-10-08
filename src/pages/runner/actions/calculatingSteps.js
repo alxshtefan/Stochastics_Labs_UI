@@ -1,5 +1,6 @@
 import { INCREMENT_WORK } from "../constants/ActionTypes";
 import { addDown, addLeft, addRight, addUp, addStop } from "../localeStorage/localeStorage";
+import { addXLeft, addYLeft, addXRight, addYRight } from "../localeStorage/localeStorageForCharts";
 
 export const run = () => (dispatch, getState) => {
   let stillRunning = true;
@@ -41,12 +42,22 @@ export const run = () => (dispatch, getState) => {
       x -= 1;
     }
 
-    if (Number(x) > Number(maxX) || Number(x) <= 0) {
+    if (Number(x) > Number(maxX)) {
       stillRunning = false;
+      addYRight(y, maxY);
+    }
+    if (Number(x) <= 0) {
+      stillRunning = false;
+      addYLeft(y, maxY);
     }
 
-    if (Number(y) > Number(maxY) || Number(y) <= 0) {
+    if (Number(y) > Number(maxY)) {
       stillRunning = false;
+      addXRight(x, maxX);
+    }
+    if (Number(y) <= 0) {
+      stillRunning = false;
+      addXLeft(x, maxX);
     }
   }
 

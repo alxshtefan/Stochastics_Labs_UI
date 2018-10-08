@@ -33,3 +33,7 @@ export const addStop = () => {
 };
 
 export const getStop = () => stop;
+
+export const getSum = () =>
+  getUp() + getDown() + getLeft() +
+  getRight() + getStop();

@@ -7,15 +7,16 @@ import Button from '@material-ui/core/Button';
 import Header from '../components/Header';
 import Settings from '../components/Settings';
 import * as runnerActions from '../actions/runner'
-import {START, PAUSE, STOP, RESUME} from "../constants/workStates";
+import {START, PAUSE, RESUME, STOP} from "../constants/workStates";
+import {getDown, getRight, getLeft, getStop, getUp} from "../localeStorage/localeStorage";
 
 class Runner extends React.Component {
 
   render() {
     const {
-      actions, doneTries, down, height, left, right,
-      pauseResumeText, settingsError, settingsStep,
-      startStopText, stop, tries, up, width, x, y
+      actions, doneTries, down, height, left, right, pauseResumeText,
+      settingsError, settingsStep, startStopText, stop, tries, up, width,
+      workFinished, x, y
     } = this.props;
 
     return (
@@ -34,51 +35,80 @@ class Runner extends React.Component {
         />
         {
           settingsStep &&
-            <Settings
-              saveDimensions={actions.saveDimensions}
-              saveProbability={actions.saveProbability}
-              saveTries={actions.saveTries}
-              saveXY={actions.saveXY}
-              settingsError={settingsError}
-              settingsStep={settingsStep}
-            />
+          <Settings
+            saveDimensions={actions.saveDimensions}
+            saveProbability={actions.saveProbability}
+            saveTries={actions.saveTries}
+            saveXY={actions.saveXY}
+            settingsError={settingsError}
+            settingsStep={settingsStep}
+          />
         }
         {
-          !settingsStep &&
-            <div style={{display: 'flex', justifyContent: 'space-around'}}>
+          !settingsStep && !workFinished &&
+          <div style={{display: 'flex', justifyContent: 'space-around'}}>
+            <Button
+              variant="contained"
+              color={startStopText === START ? 'primary' : 'secondary'}
+              onClick={() => {
+                actions.changeStartStop(
+                  startStopText === START
+                    ? STOP
+                    : START
+                );
+
+                if (startStopText === START) {
+                  actions.startWork();
+                } else {
+                  actions.stopWork();
+                }
+
+              }}
+            >
+              {startStopText}
+            </Button>
+            {
+              startStopText === STOP &&
               <Button
                 variant="contained"
-                color={startStopText === START ? 'primary' : 'secondary'}
+                color={pauseResumeText === PAUSE ? 'primary' : 'secondary'}
                 onClick={() => {
-                  actions.changeStartStop(
-                    startStopText === START
-                      ? STOP
-                      : START
-                  );
-                  actions.startWork();
-                }}
-                >
-                  {startStopText}
-              </Button>
-              {
-                startStopText === STOP &&
-                <Button
-                  variant="contained"
-                  color={pauseResumeText === PAUSE ? 'primary' : 'secondary'}
-                  onClick={() => actions.changeResumePause(
+                  actions.changeResumePause(
                     pauseResumeText === PAUSE
                       ? RESUME
                       : PAUSE
-                  )}
-                  >
-                    {pauseResumeText}
-                </Button>
-              }
-            </div>
+                  );
+
+                  if (pauseResumeText === PAUSE) {
+                    actions.pauseWork();
+                  } else {
+                    actions.startWork();
+                  }
+
+                }}
+              >
+                {pauseResumeText}
+              </Button>
+            }
+          </div>
         }
-        <div style={{fontSize: '100px', textAlign: 'center'}}>
-          {!doneTries ? '-' : doneTries} / {!tries ? '-' : tries}
-        </div>
+        {
+          tries &&
+          <div style={{fontSize: '100px', textAlign: 'center'}}>
+            {!doneTries ? '-' : doneTries} / {!tries ? '-' : tries}
+          </div>
+        }
+
+        {
+          workFinished &&
+          <div>
+            <div>{getUp()}</div>
+            <div>{getRight()}</div>
+            <div>{getDown()}</div>
+            <div>{getLeft()}</div>
+            <div>{getStop()}</div>
+          </div>
+        }
       </div>
     )
   }
@@ -99,6 +129,7 @@ Runner.propTypes = {
   tries: PropTypes.number.isRequired,
   up: PropTypes.number.isRequired,
   width: PropTypes.func.isRequired,
+  workFinished: PropTypes.bool.isRequired,
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired
 };
@@ -117,6 +148,7 @@ const mapStateToProps = state => ({
   tries: state.runner.tries,
   up: state.runner.up,
   width: state.runner.width,
+  workFinished: state.runner.workFinished,
   x: state.runner.x,
   y: state.runner.y,
 });

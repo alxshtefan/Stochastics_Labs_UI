@@ -3,10 +3,12 @@ import {
   CHANGE_START_STOP_STATE,
   CHANGE_PAUSE_RESUME_STATE,
   INCREMENT_WORK,
+  FINISH_WORK,
   SAVE_DIMENSIONS,
   SAVE_PROBABILITY,
   SAVE_TRIES,
-  SAVE_XY
+  SAVE_XY,
+  SET_TIMER
 } from '../constants/ActionTypes';
 import {
   DIMENSIONS,
@@ -17,6 +19,8 @@ import {
 import { START, PAUSE } from '../constants/workStates';
 
 const initialState = {
+  timerId: null,
+  workFinished: false,
   doneTries: null,
   down: null,
   height: null,
@@ -71,7 +75,7 @@ export const runner = (state = initialState, action) => {
         y = null;
         settingsError = 'Must be only integers.';
         settingsStep = XY;
-      } else if (x > state.width || y > state.height) {
+      } else if (Number(x) > Number(state.width) || Number(y) > Number(state.height)) {
         x = null;
         y = null;
         settingsError = 'x must be less then width and y must be less then height.';
@@ -205,6 +209,18 @@ export const runner = (state = initialState, action) => {
         pauseResumeText: action.payload
       }
     }
+
+    case SET_TIMER:
+      return {
+        ...state,
+        timerId: action.payload
+      };
+
+    case FINISH_WORK:
+      return {
+        ...state,
+        workFinished: true
+      };
 
     case INCREMENT_WORK: {
       const doneTries = state.doneTries + 1;

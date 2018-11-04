@@ -8,7 +8,7 @@ import {
   SAVE_PROBABILITY,
   SAVE_TRIES,
   SAVE_XY,
-  SET_TIMER
+  SET_TIMER, UPDATE_DONE_TRIES
 } from '../constants/ActionTypes';
 import {
   DIMENSIONS,
@@ -21,11 +21,12 @@ import { START, PAUSE } from '../constants/workStates';
 const initialState = {
   timerId: null,
   workFinished: false,
-  doneTries: null,
+  doneTries: 0,
   down: null,
   height: null,
   left: null,
   right: null,
+  result: null,
   settingsError: '',
   settingsStep: DIMENSIONS,
   startStopText: START,
@@ -219,7 +220,8 @@ export const runner = (state = initialState, action) => {
     case FINISH_WORK:
       return {
         ...state,
-        workFinished: true
+        workFinished: true,
+        result: action.payload
       };
 
     case INCREMENT_WORK: {
@@ -229,6 +231,12 @@ export const runner = (state = initialState, action) => {
         doneTries
       };
     }
+
+    case UPDATE_DONE_TRIES:
+      return {
+        ...state,
+        doneTries: action.payload.progress
+      };
 
     default:
       return state

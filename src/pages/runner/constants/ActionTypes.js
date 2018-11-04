@@ -7,3 +7,4 @@ export const SAVE_PROBABILITY = 'SAVE_PROBABILITY';
 export const SAVE_TRIES = 'SAVE_TRIES';
 export const SET_TIMER = 'SET_TIMER';
 export const FINISH_WORK = 'FINISH_WORK';
+export const UPDATE_DONE_TRIES = 'UPDATE_DONE_TRIES';

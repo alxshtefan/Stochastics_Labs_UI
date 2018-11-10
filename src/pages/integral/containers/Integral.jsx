@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 
 import * as integralActions from '../actions/integral';
 import InputLabel from "@material-ui/core/InputLabel/InputLabel";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from "@material-ui/core/TextField/TextField";
 import Button from "@material-ui/core/Button/Button";
 
@@ -79,25 +80,37 @@ class Integral extends React.Component {
         >
           Start counting!
         </Button>
-        <div style={{padding: 20}}>
-          Result by geometric method: {this.props.geometricMethod}
-          <br/>
-          Result by rectangle method: {this.props.rectangleMethod}
-          <br/>
-          Result by simple method: {this.props.simpleMethod}
+        <div style={{display: 'flex', justifyContent: 'center'}}>
+          { this.props.isFetching && <CircularProgress />}
         </div>
+        {
+          this.props.geometricMethod &&
+            <div style={{padding: 20}}>
+              Result by geometric method: {this.props.geometricMethod}
+              <br/>
+              Result by rectangle method: {this.props.rectangleMethod}
+              <br/>
+              Result by simple method: {this.props.simpleMethod}
+              <br/>
+              Result by analytical method: {this.props.analyticalMethod}
+            </div>
+        }
       </div>
     )
   }
 }
 
 Integral.propTypes = {
+  isFetching: PropTypes.bool,
+  analyticalMethod: PropTypes.number,
   geometricMethod: PropTypes.number,
   rectangleMethod: PropTypes.number,
   simpleMethod: PropTypes.number
 };
 
 const mapStateToProps = state => ({
+  isFetching: state.integral.isFetching,
+  analyticalMethod: state.integral.analyticalMethod,
   geometricMethod: state.integral.geometricMethod,
   rectangleMethod: state.integral.rectangleMethod,
   simpleMethod: state.integral.simpleMethod
